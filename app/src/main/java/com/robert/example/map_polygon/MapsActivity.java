@@ -3,6 +3,7 @@ package com.robert.example.map_polygon;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -13,6 +14,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,12 +37,12 @@ import java.util.List;
 import edu.missouri.frame.GePoint;
 import edu.missouri.frame.ReadFlightParameters;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, SeekBar.OnSeekBarChangeListener {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     GoogleMap gMap;
     CheckBox checkBox;
     SeekBar seekRed,seekGreen,seekBlue;
-    Button btDraw,btClear;
+    Button btDraw,btClear,btCamera;
     Polygon polygon = null;
     Polyline pathPoly;
     ArrayList<LatLng> latLngList = new ArrayList<>();
@@ -52,6 +54,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     ReadFlightParameters path = new ReadFlightParameters();
     int altitude;
     EditText et_altitude;
+    TextView tv_info;
     int red = 0,green = 0,blue = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,16 +62,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_maps);
         //Assign var
         checkBox = findViewById(R.id.check_box);
-        seekRed = findViewById(R.id.seek_red);
-        seekBlue = findViewById(R.id.seek_blue);
-        seekGreen = findViewById(R.id.seek_green);
         btDraw =  findViewById(R.id.bt_draw);
         btClear  = findViewById(R.id.bt_clear);
         et_altitude = findViewById(R.id.et_altitude);
+        tv_info = findViewById(R.id.tv_info);
+        btCamera = findViewById(R.id.bt_camera);
         //initialize map frag
         SupportMapFragment supportMapFragment = (SupportMapFragment)
                 getSupportFragmentManager().findFragmentById(R.id.google_map);
         supportMapFragment.getMapAsync(this);
+        tv_info.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.satelite_icon),
+                null,null,null);//依次是左、上、右、下，有就是位置，没有就是null
+        tv_info.setCompoundDrawablePadding(10);//设置文字与图标间距
+        tv_info.setText("GPS information");
+        btCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MapsActivity.this,MyWindow.class);
+                startService(intent);
+            }
+        });
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -78,7 +91,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (polygon == null)
                         return;
                     //Fill
-                    polygon.setFillColor(Color.argb(100,red,blue,green));
                     generatePath();
                 }
                 else{
@@ -100,6 +112,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 PolygonOptions polygonOptions = new PolygonOptions().addAll(latLngList)
                         .clickable(true);
                 polygon = gMap.addPolygon((polygonOptions));
+                polygon.setFillColor(Color.argb(100,255,0,30));
+
 
 
 
@@ -121,14 +135,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 wpMarkerList.clear();
                 checkBox.setChecked(false);
                 corner.clear();
-                seekRed.setProgress(0);
-                seekGreen.setProgress(0);
-                seekBlue.setProgress(0);
             }
         });
-        seekRed.setOnSeekBarChangeListener(this);
-        seekBlue.setOnSeekBarChangeListener(this);
-        seekGreen.setOnSeekBarChangeListener(this);
+
 
     }
     public void generatePath(){
@@ -136,7 +145,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             corner.add(new GePoint(p.latitude,p.longitude));
         }
 
-        path.UpdateBounds(corner,corner.get(0),100,20);
+        path.UpdateBounds(corner,corner.get(0),100,0.8);
         List<GePoint> wps = path.getWaypoints();
         List<Boolean> isTurning = path.getIsTurning();
         List<Double> a = path.getAltitudes();
@@ -161,6 +170,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         gMap = googleMap;
         gMap.setMapType(gMap.MAP_TYPE_SATELLITE);
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(38.9129228409671,-92.2959491063508),15));
+        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(38.9129228409671,-92.2959491063508));
+        Marker marker = gMap.addMarker(markerOptions.draggable(true).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.drawable.drone_icon)));
         gMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -194,7 +205,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 catch (Exception e)
                 {
-                    altitude = 100;
+                    altitude = 60;
                 }
 
                 markerOptions.title(String.valueOf(markerList.size())+'_'+String.valueOf(altitude));
@@ -205,34 +216,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
     }
-    @Override
-    public void onProgressChanged(SeekBar seekBar,int i, boolean b){
-        switch(seekBar.getId()){
-            case R.id.seek_red:
-                red = i;
-                break;
-            case R.id.seek_green:
-                green = i;
-                break;
-            case R.id.seek_blue:
-                blue = i;
-                break;
-        }
-        if (polygon!=null)
-            polygon.setStrokeColor(Color.argb(100,red,green,blue));
-        if (checkBox.isChecked()){
-            polygon.setFillColor(Color.argb(100,red,green,blue));
-        }
-    }
 
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
 
-    }
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-
-    }
 
 }

@@ -4,13 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MapsActivity">
 
     <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/google_map"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="camera"
+        android:id="@+id/bt_camera"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="gps_info"
+        android:layout_alignParentRight="true"
+        android:id="@+id/tv_info"
+        />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,53 +31,25 @@
         android:padding="10dp"
         android:layout_alignParentBottom="true"
         android:background="@android:color/white">
-        <CheckBox
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/check_box"
-            android:text="Fill polygon"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Polygon color"
-            android:textStyle="bold"
-            android:layout_marginTop="10dp"
-            />
-        <SeekBar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/seek_red"
-            android:max="255"
-            android:thumbTint="#FF0000"
-            android:progressTint="#FF0000"
-            android:layout_marginTop="5dp"/>
-        <SeekBar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/seek_green"
-            android:max="255"
-            android:thumbTint="#00FF00"
-            android:progressTint="#00FF00"
-            android:layout_marginTop="5dp"/>
-        <SeekBar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/seek_blue"
-            android:max="255"
-            android:thumbTint="#0000FF"
-            android:layout_marginTop="5dp"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="2"
             android:orientation="horizontal"
             android:layout_marginTop="10dp">
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/check_box"
+                android:text="generate"
+                android:layout_weight="0.5"/>
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="draw"
+                android:text="Fill"
                 android:id="@+id/bt_draw"
-                android:layout_weight="1"/>
+                android:layout_weight="0.5"/>
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
