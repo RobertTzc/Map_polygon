@@ -43,20 +43,9 @@ public class MyService extends Service {
  
 	private Handler handler = new Handler() {
 	public void handleMessage(Message msg) {
+		mWindowManager.addView(myWindow, Params);
 
-			if (isHome()) {
-				// 如果回到桌面,则显示悬浮窗
-				if (!myWindow.isAttachedToWindow()) {
-					mWindowManager.addView(myWindow, Params);
-				}
-
-			} else {
-				// 如果在非桌面,则去掉悬浮窗
-				if (myWindow.isAttachedToWindow()) {
-					mWindowManager.removeView(myWindow);
-				}
-			}
-			super.handleMessage(msg);
+		super.handleMessage(msg);
 		};
 	};
 

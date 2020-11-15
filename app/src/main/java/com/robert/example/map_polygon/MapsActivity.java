@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,7 +56,32 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     int altitude;
     EditText et_altitude;
     TextView tv_info;
+    DroneStatus droneStatus = new DroneStatus();
     int red = 0,green = 0,blue = 0;
+    void createDroneInfo(){
+        droneStatus.batteryPercentage=100;
+        droneStatus.droneHeading =0;
+        droneStatus.droneLatitude = 38.9129228409671;
+        droneStatus.droneLongtitude = -92.2959491063508;
+        droneStatus.droneHeight = 100;
+        droneStatus.overlapRatio = 20;
+        droneStatus.plannedSpeed = 5;
+        droneStatus.satelliteCount=15;
+        droneStatus.batteryPrecentageRemian = droneStatus.batteryPercentage;
+        displayDroneInfo();
+    }
+    private static DecimalFormat df = new DecimalFormat("0.00");
+    void displayDroneInfo(){
+        tv_info.setText("Battery_info: "+String.valueOf(droneStatus.batteryPercentage)+"" +
+                "\nSatellite count: "+String.valueOf(droneStatus.satelliteCount)+
+                "\nSpeed_info: "+String.valueOf(df.format(droneStatus.droneSpeed))+"m/s"+
+                "\nSpeed set: "+String.valueOf(droneStatus.plannedSpeed)+"m/s"+
+                "\nHeight: "+String.valueOf(df.format(droneStatus.droneHeight))+"m"+
+                "\nOverlap set: "+ String.valueOf(droneStatus.overlapRatio)+
+                "\nDrone heading : "+ String.valueOf(droneStatus.droneHeading)+
+                "\nDrone battery estimation remain： "+String.valueOf(droneStatus.batteryPrecentageRemian)
+        );
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,14 +93,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         et_altitude = findViewById(R.id.et_altitude);
         tv_info = findViewById(R.id.tv_info);
         btCamera = findViewById(R.id.bt_camera);
+        createDroneInfo();
+
         //initialize map frag
         SupportMapFragment supportMapFragment = (SupportMapFragment)
                 getSupportFragmentManager().findFragmentById(R.id.google_map);
         supportMapFragment.getMapAsync(this);
-        tv_info.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.satelite_icon),
-                null,null,null);//依次是左、上、右、下，有就是位置，没有就是null
-        tv_info.setCompoundDrawablePadding(10);//设置文字与图标间距
-        tv_info.setText("GPS information");
         btCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,7 +169,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             corner.add(new GePoint(p.latitude,p.longitude));
         }
 
-        path.UpdateBounds(corner,corner.get(0),100,0.8);
+        path.UpdateBounds(corner,altitude,corner.get(0),altitude,droneStatus);
+        droneStatus.batteryPrecentageRemian = path.getEnergyPercentRemainingAfterPlan()*100;
         List<GePoint> wps = path.getWaypoints();
         List<Boolean> isTurning = path.getIsTurning();
         List<Double> a = path.getAltitudes();
@@ -158,19 +183,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (isTurning.get(i))
                 marker= gMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.turn_icon)));
             else
-                marker = gMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.camera_icon)));
+                marker = gMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.camera_icon)).alpha(0.5f));
             wpMarkerList.add(marker);
             generatedPath.add(latLng);
         }
         pathPoly = gMap.addPolyline(generatedPath);
+        displayDroneInfo();
+
 
     }
     @Override
     public void onMapReady(GoogleMap googleMap) {
         gMap = googleMap;
         gMap.setMapType(gMap.MAP_TYPE_SATELLITE);
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(38.9129228409671,-92.2959491063508),15));
-        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(38.9129228409671,-92.2959491063508));
+        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droneStatus.droneLatitude,droneStatus.droneLongtitude),15));
+        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(droneStatus.droneLatitude,droneStatus.droneLongtitude)).rotation(droneStatus.droneHeading).anchor(0.5f,0.5f);
         Marker marker = gMap.addMarker(markerOptions.draggable(true).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.drawable.drone_icon)));
         gMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
