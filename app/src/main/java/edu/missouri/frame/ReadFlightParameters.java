@@ -108,7 +108,7 @@ public class ReadFlightParameters {
             this.reconmendSpeed = drone.getOptimalSpeed(plannedSpeed,energyBudget);
         }
         else {
-            this.energyPercentRemainingAfterPlan = (int)Math.round(100*(drone.TOTAL_ENERGY-energyUse)/drone.TOTAL_ENERGY);
+            this.energyPercentRemainingAfterPlan = (int)Math.round(100*(0.01*Option.energyPercnetRemaining*drone.TOTAL_ENERGY-energyUse)/drone.TOTAL_ENERGY);
             this.ifEnergyEnough = true;
             this.reconmendSpeed = plannedSpeed;
         }
