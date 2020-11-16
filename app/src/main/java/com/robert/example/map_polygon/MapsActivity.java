@@ -169,7 +169,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             corner.add(new GePoint(p.latitude,p.longitude));
         }
 
-        path.UpdateBounds(corner,altitude,corner.get(0),altitude,droneStatus);
+        path.UpdateBounds(corner,altitude,droneStatus);
         droneStatus.batteryPrecentageRemian = path.getEnergyPercentRemainingAfterPlan()*100;
         List<GePoint> wps = path.getWaypoints();
         List<Boolean> isTurning = path.getIsTurning();

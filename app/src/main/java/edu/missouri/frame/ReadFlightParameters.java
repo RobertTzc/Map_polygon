@@ -21,6 +21,7 @@ public class ReadFlightParameters {
     public int energyPercnetRemaining;
     public List<GePoint> GPSvertices;
     public GePoint GPSstartPoint;
+    public GePoint GPSendPoint;
 
     public List<GePoint> wayPoints;
     public List<Double> altitudes;
@@ -36,9 +37,10 @@ public class ReadFlightParameters {
 
     public ReadFlightParameters() {
     }
-    public void UpdateBounds(List<GePoint> GPSvertices,  double height, GePoint GPSstartPoint,double startPointHeightdouble, DroneStatus droneStatus)
+    public void UpdateBounds(List<GePoint> GPSvertices,  double height, DroneStatus droneStatus)
     {
-        this.GPSstartPoint = GPSstartPoint;
+        this.GPSstartPoint = new GePoint(droneStatus.droneLatitude,droneStatus.droneLongtitude);
+        this.GPSendPoint = new GePoint(droneStatus.homeLatitude,droneStatus.homeLongtitude);
         this.GPSvertices = GPSvertices;
         this.height = height;
         this.overlap = droneStatus.overlapRatio;
@@ -52,7 +54,6 @@ public class ReadFlightParameters {
          *
          */
 
-
         int verticesNum = GPSvertices.size();
         List<GePoint> GPSverticesSorted = new SortVertise(GPSvertices).getCounterClockwiseVertices();
         Point[] verticesTmp = new Point[verticesNum];
@@ -60,7 +61,13 @@ public class ReadFlightParameters {
             List<Point> points = new ArrayList<Point>();
             verticesTmp[i] = GPSToCord(GPSverticesSorted.get(i), GPSstartPoint);
         }
-        new Option().setParameters(height, GPSstartPoint, verticesTmp, overlap,energyPercnetRemaining,plannedSpeed);
+        Point startPoint =  GPSToCord(GPSstartPoint, GPSstartPoint);
+        Point endPoint = GPSToCord(GPSendPoint, GPSstartPoint);
+//        if (GPSstartPoint.latitude == GPSendPoint.latitude && GPSstartPoint.longtitude==GPSendPoint.longtitude){
+//            endPoint = GPSToCord(GPSstartPoint, GPSstartPoint);
+//        }
+
+        new Option().setParameters(height,GPSstartPoint,startPoint,endPoint, verticesTmp, overlap,energyPercnetRemaining,plannedSpeed,prePlannedSpeed);
         planPath();
     }
 

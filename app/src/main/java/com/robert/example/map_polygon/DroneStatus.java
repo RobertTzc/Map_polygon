@@ -4,10 +4,10 @@ public class DroneStatus {
         public int batteryPercentage = 100;//[0,100] in percentage
         public int batteryPrecentageRemian = 100;
 
-        public double droneLatitude=0;
-        public double droneLongtitude=0;
-        public double homeLatitude = 0;
-        public double homeLongtitude = 0;
+        public double droneLatitude= 38.9129228409671;
+        public double droneLongtitude= -92.2959491063508;
+        public double homeLatitude = 38.9129228409671;
+        public double homeLongtitude = -92.2959491063508;
 
         public float droneHeading = 0;
         public float droneHeight=0;// in meters, note this is current height, not the path planning height
