@@ -232,7 +232,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 catch (Exception e)
                 {
-                    altitude = 60;
+                    altitude = 90;
                 }
 
                 markerOptions.title(String.valueOf(markerList.size())+'_'+String.valueOf(altitude));

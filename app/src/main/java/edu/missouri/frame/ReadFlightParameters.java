@@ -61,8 +61,8 @@ public class ReadFlightParameters {
             List<Point> points = new ArrayList<Point>();
             verticesTmp[i] = GPSToCord(GPSverticesSorted.get(i), GPSstartPoint);
         }
-        Point startPoint =  GPSToCord(GPSstartPoint, GPSstartPoint);
-        Point endPoint = GPSToCord(GPSendPoint, GPSstartPoint);
+        Point startPoint =  new Point(GPSToCord(GPSstartPoint, GPSstartPoint),droneStatus.droneHeight);
+        Point endPoint = new Point(GPSToCord(GPSendPoint, GPSstartPoint),0);
 //        if (GPSstartPoint.latitude == GPSendPoint.latitude && GPSstartPoint.longtitude==GPSendPoint.longtitude){
 //            endPoint = GPSToCord(GPSstartPoint, GPSstartPoint);
 //        }
