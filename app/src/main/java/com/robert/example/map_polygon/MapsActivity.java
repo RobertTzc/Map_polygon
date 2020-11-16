@@ -59,10 +59,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     DroneStatus droneStatus = new DroneStatus();
     int red = 0,green = 0,blue = 0;
     void createDroneInfo(){
-        droneStatus.batteryPercentage=100;
-        droneStatus.droneHeading =0;
+        droneStatus.batteryPercentage=20;
+        droneStatus.droneHeading = (int)(Math.random()*360)-180;
         droneStatus.droneLatitude = 38.9129228409671;
         droneStatus.droneLongtitude = -92.2959491063508;
+        droneStatus.homeLatitude = 38.9139228409671;
+        droneStatus.homeLongtitude = -92.2959491063508;
         droneStatus.droneHeight = 100;
         droneStatus.overlapRatio = 20;
         droneStatus.plannedSpeed = 5;
@@ -169,8 +171,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             corner.add(new GePoint(p.latitude,p.longitude));
         }
 
-        path.UpdateBounds(corner,altitude,corner.get(0),altitude,droneStatus);
-        droneStatus.batteryPrecentageRemian = path.getEnergyPercentRemainingAfterPlan()*100;
+        path.UpdateBounds(corner,altitude,droneStatus);
+        droneStatus.batteryPrecentageRemian = path.getEnergyPercentRemainingAfterPlan();
         List<GePoint> wps = path.getWaypoints();
         List<Boolean> isTurning = path.getIsTurning();
         List<Double> a = path.getAltitudes();
@@ -196,9 +198,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         gMap = googleMap;
         gMap.setMapType(gMap.MAP_TYPE_SATELLITE);
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droneStatus.droneLatitude,droneStatus.droneLongtitude),15));
+        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droneStatus.homeLatitude,droneStatus.homeLongtitude),18));
         MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(droneStatus.droneLatitude,droneStatus.droneLongtitude)).rotation(droneStatus.droneHeading).anchor(0.5f,0.5f);
         Marker marker = gMap.addMarker(markerOptions.draggable(true).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.drawable.drone_icon)));
+        MarkerOptions markerOptionsH = new MarkerOptions().position(new LatLng(droneStatus.homeLatitude,droneStatus.homeLongtitude));
+        Marker markerH = gMap.addMarker(markerOptionsH.draggable(true).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.drawable.drone_home_icon)));
+
         gMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
