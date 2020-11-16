@@ -77,7 +77,7 @@ public class ReadFlightParameters {
         area = Area.readPolygonFromCSV();
         drone = new ImprovedDirectDrone(area);
         Map<Point, Boolean> maps = drone.routes();
-        double energyBudget = drone.TOTAL_ENERGY * (Option.energyPercnetRemaining-20)/100.0;//20% alarm
+        double energyBudget = drone.TOTAL_ENERGY * (Option.energyPercnetRemaining)/100.0;//20% alarm
         double energyUse = drone.energyUsed(plannedSpeed);
         Iterator<Map.Entry<Point, Boolean>> entries = maps.entrySet().iterator();
         List<Point> waypoints = new ArrayList<>();
