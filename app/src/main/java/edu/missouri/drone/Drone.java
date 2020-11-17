@@ -167,12 +167,9 @@
              if(j%2 == 0){
                  result.addAll(l.toSubpoints(Option.defaultImageHeight()));
              }
-             else {
-                 result.addAll(l.getPoints());
-             }
              j++;
          }
-         result.add(points.get(points.size()-1));
+//         result.add(points.get(points.size()-1));
          return result;
      }
 
