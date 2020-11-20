@@ -1,6 +1,9 @@
 package com.robert.example.map_polygon;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Intent;
@@ -8,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -48,7 +52,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     Polyline pathPoly;
     ArrayList<LatLng> latLngList = new ArrayList<>();
     ArrayList<LatLng> wpLatLngList = new ArrayList<>();
-
+    DrawerLayout drawerLayout;
     ArrayList<Marker> markerList = new ArrayList<>();
     ArrayList<Marker> wpMarkerList = new ArrayList<>();
     ArrayList<GePoint> corner = new ArrayList<>();
@@ -95,6 +99,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         et_altitude = findViewById(R.id.et_altitude);
         tv_info = findViewById(R.id.tv_info);
         btCamera = findViewById(R.id.bt_camera);
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+                //Toast.makeText(MapsActivity.this,"slide",Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                //Toast.makeText(MapsActivity.this,"open",Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+                //Toast.makeText(MapsActivity.this,"close",Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
         createDroneInfo();
 
         //initialize map frag
@@ -108,6 +137,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startService(intent);
             }
         });
+        findViewById(R.id.btn_open_right).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.END);
+
+                Toast.makeText(MapsActivity.this,"show",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        findViewById(R.id.btn_close_right).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.closeDrawer(GravityCompat.END);
+            }
+        });
+
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -176,6 +221,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         List<GePoint> wps = path.getWaypoints();
         List<Boolean> isTurning = path.getIsTurning();
         List<Double> a = path.getAltitudes();
+
+        //add check if duplicate wp exist
+        ArrayList<GePoint> pre_wp = new ArrayList<>();
+        List<Integer> toremove = new ArrayList<>();
+        for  (int i = 0;i<wps.size();i++){
+            if (pre_wp.contains(wps.get(i)))
+                toremove.add(i);
+            else
+                pre_wp.add(wps.get(i));
+        }
+        for (int i= toremove.size()-1 ; i>=0;i--){
+            wps.remove(toremove.get(i));
+            isTurning.remove(toremove.get(i));
+            a.remove(toremove.get(i));
+        }
         PolylineOptions generatedPath = new PolylineOptions();
         for (int i = 0;i<wps.size();i++){
             GePoint wp = wps.get(i);
@@ -183,9 +243,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             MarkerOptions markerOptions = new MarkerOptions().position(latLng);
             Marker marker = null;
             if (isTurning.get(i))
-                marker= gMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.turn_icon)));
+                marker= gMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.turn_icon)).title(String.valueOf(i+1)+'_'+String.valueOf(altitude)));
             else
-                marker = gMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.camera_icon)).alpha(0.5f));
+                marker = gMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.camera_icon)).alpha(0.5f).title(String.valueOf(i+1)+'_'+String.valueOf(altitude)));
             wpMarkerList.add(marker);
             generatedPath.add(latLng);
         }

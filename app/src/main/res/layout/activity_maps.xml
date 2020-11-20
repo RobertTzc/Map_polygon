@@ -6,67 +6,115 @@
     android:layout_height="match_parent"
     tools:context=".MapsActivity">
 
-    <fragment
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/google_map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="camera"
-        android:id="@+id/bt_camera"
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="gps_info"
-        android:layout_alignParentRight="true"
-        android:id="@+id/tv_info"
-        />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="10dp"
-        android:layout_alignParentBottom="true"
-        android:background="@android:color/white">
+        >
 
+        <!-- 内容区 -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/google_map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="camera"
+            android:id="@+id/bt_camera"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="gps_info"
+            android:layout_alignParentRight="true"
+            android:id="@+id/tv_info"
+            />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="2"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp">
-            <CheckBox
-                android:layout_width="0dp"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/check_box"
-                android:text="generate"
-                android:layout_weight="0.5"/>
+                android:weightSum="2.5"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+                <CheckBox
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/check_box"
+                    android:text="generate"
+                    android:layout_weight="0.5"/>
+                <Button
+                    android:id="@+id/btn_open_right"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="setting"
+                    android:layout_weight="0.5"/>
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Fill"
+                    android:id="@+id/bt_draw"
+                    android:layout_weight="0.5"/>
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:hint="Altitude"
+                    android:id="@+id/et_altitude"
+                    android:inputType="number"/>
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="clear"
+                    android:id="@+id/bt_clear"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+        </RelativeLayout>
+
+        <!-- 右边菜单 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="@color/translucent"
+            android:gravity="center"
+
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:text="右边菜单"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
             <Button
-                android:layout_width="0dp"
+                android:id="@+id/btn_close_right"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fill"
-                android:id="@+id/bt_draw"
-                android:layout_weight="0.5"/>
-            <EditText
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:hint="Altitude"
-                android:id="@+id/et_altitude"
-                android:inputType="number"/>
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="clear"
-                android:id="@+id/bt_clear"/>
+                android:text="关闭"/>
+
         </LinearLayout>
 
+    </androidx.drawerlayout.widget.DrawerLayout>
 
-    </LinearLayout>
 
 
 </RelativeLayout>
