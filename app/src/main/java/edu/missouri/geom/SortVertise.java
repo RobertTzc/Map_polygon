@@ -75,5 +75,10 @@ public class SortVertise {
         return result;
     }
 
+    public List<GePoint> reverseVertices(){
+        Collections.reverse(GPSVertices);
+        return GPSVertices;
+    }
+
 
 }

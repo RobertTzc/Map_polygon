@@ -55,7 +55,13 @@ public class ReadFlightParameters {
          */
 
         int verticesNum = GPSvertices.size();
-        List<GePoint> GPSverticesSorted = new SortVertise(GPSvertices).getCounterClockwiseVertices();
+        List<GePoint> TMPGPSvertices;
+        try{
+            TMPGPSvertices = GPSvertices;
+        }catch (Exception e){
+            TMPGPSvertices = new SortVertise(GPSvertices).reverseVertices();
+        }
+        List<GePoint> GPSverticesSorted = TMPGPSvertices;
         Point[] verticesTmp = new Point[verticesNum];
         for (int i = 0; i < verticesNum; i++) {
             List<Point> points = new ArrayList<Point>();
