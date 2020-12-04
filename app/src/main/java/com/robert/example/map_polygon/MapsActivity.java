@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +34,7 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.warkiz.tickseekbar.TickSeekBar;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -58,9 +60,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     ArrayList<GePoint> corner = new ArrayList<>();
     ReadFlightParameters path = new ReadFlightParameters();
     int altitude;
+    TickSeekBar seekBar;
     EditText et_altitude;
     TextView tv_info;
     DroneStatus droneStatus = new DroneStatus();
+    NumberPicker np_shutter,np_ISO,np_aperture,np_exposureCompensation;
+    String[] ISOValue = new String[]{"50","100","200","400","800","1600","3200","6400","12800","25600"};
+    String[] ShutterValue = new String[]{"1_20000","1_16000","1_12800","1_10000","1_8000","1_6400","1_6000","1_5000","1_4000","1_3200","1_3000","1_2500","1_2000","1_1600","1_1500",
+            "1_1250","1_1000","1_800","1_725","1_640","1_500","1_400","1_350","1_320","1_250","1_240","1_200","1_180","1_160","1_125","1_120","1_100","1_90",
+            "1_80","1_60","1_50","1_40","1_30","1_25","1_20","1_15","1_12_DOT_5","1_10","1_8","1_6_DOT_25","1_5","1_4","1_3","1_2_DOT_5","1_2",
+            "1_1_DOT_67","1_1_DOT_25","1","1_DOT_3","1_DOT_6","2","2_DOT_5","3","3_DOT_2","4","5","6","7","8","9","10","13","15","20","25","3"};
+    String[] ApertureValue = new String[]{"F_1_DOT_7","F_1_DOT_8","F_2","F_2_DOT_2","F_2_DOT_5","F_2_DOT_6","F_2_DOT_8","F_3_DOT_2","F_3_DOT_4","F_3_DOT_5","F_4","F_4_DOT_5","F_4_DOT_8","F_5","F_5_DOT_6",
+            "F_6_DOT_3","F_6_DOT_8","F_7_DOT_1","F_8","F_9","F_9_DOT_6","F_10","F_11","F_13","F_14","F_16","F_18","F_19","F_20","F_22"};
+    String[] ExposureValue = new String[]{"N_5_0","N_4_7","N_4_3","N_4_0","N_3_7","N_3_3","N_3_0","N_2_7","N_2_3","N_2_0","N_1_7","N_1_3","N_1_0","N_0_7","N_0_3","N_0_0",
+                                                "P_0_3","P_0_7","P_1_0","P_1_3","P_1_7","P_2_0","P_2_3","P_2_7","P_3_0","P_3_3","P_3_7","P_4_0","P_4_3","P_4_7","P_5_0"};
+
     int red = 0,green = 0,blue = 0;
     void createDroneInfo(){
         droneStatus.batteryPercentage=20;
@@ -100,6 +114,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         tv_info = findViewById(R.id.tv_info);
         btCamera = findViewById(R.id.bt_camera);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        np_shutter = findViewById(R.id.np_shutter);
+        np_aperture = findViewById(R.id.np_Aperture);
+        np_exposureCompensation = findViewById(R.id.np_exposure);
+        np_ISO = findViewById(R.id.np_ISO);
+
+        np_shutter.setDisplayedValues(ShutterValue);
+        np_shutter.setMaxValue(10);
+        np_ISO.setDisplayedValues(ISOValue);
+        np_ISO.setMaxValue(5);
+        np_exposureCompensation.setDisplayedValues(ExposureValue);
+        np_exposureCompensation.setMaxValue(10);
+        np_aperture.setDisplayedValues(ApertureValue);
+        np_aperture.setMaxValue(ApertureValue.length-1);
         drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
