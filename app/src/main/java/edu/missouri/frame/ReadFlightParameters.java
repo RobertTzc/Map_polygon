@@ -61,7 +61,7 @@ public class ReadFlightParameters {
 //        }catch (Exception e){
 //            TMPGPSvertices = new SortVertise(GPSvertices).reverseVertices();
 //        }
-        List<GePoint> GPSverticesSorted = GPSvertices;
+        List<GePoint> GPSverticesSorted = new SortVertise(GPSvertices).getCounterClockwiseVertices();
         Point[] verticesTmp = new Point[verticesNum];
         for (int i = 0; i < verticesNum; i++) {
             verticesTmp[i] = GPSToCord(GPSverticesSorted.get(i), GPSstartPoint);
