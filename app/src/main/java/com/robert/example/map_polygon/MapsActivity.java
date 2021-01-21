@@ -65,7 +65,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         droneStatus.droneLongtitude = -92.2959491063508;
         droneStatus.droneHeight = 100;
         droneStatus.overlapRatio = 20;
-        droneStatus.plannedSpeed = 5;
+        droneStatus.plannedSpeed = 10;
         droneStatus.satelliteCount=15;
         droneStatus.batteryPrecentageRemian = droneStatus.batteryPercentage;
         displayDroneInfo();

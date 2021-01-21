@@ -16,8 +16,8 @@
 
      // From the DJI spec sheet on the Mavic Pro:
      public static final double ASPECT_RATIO             = 9.0/16.0;                           // ratio
-     public static final double FOV_HEIGHT                = Math.toRadians(67.0);              // radians
-     public static final double FOV_WIDTH               = ASPECT_RATIO * FOV_HEIGHT;      // radians
+     public static final double FOV_WIDTH                = Math.toRadians(67.0);              // radians
+     public static final double FOV_HEIGHT               =  ASPECT_RATIO * FOV_WIDTH;      // radians
      public static final double MAX_TRAVEL_DISTANCE      = 12874.8;                           // meters
      public static final double ASCENT_SPEED             = 3.0;                               // meters per second
      public static final double DESCENT_SPEED            = 3.0;                               // meters per second
