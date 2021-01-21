@@ -59,7 +59,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     DroneStatus droneStatus = new DroneStatus();
     int red = 0,green = 0,blue = 0;
     void createDroneInfo(){
-        droneStatus.batteryPercentage=20;
+        droneStatus.batteryPercentage=100;
         droneStatus.droneHeading =0;
         droneStatus.droneLatitude = 38.9129228409671;
         droneStatus.droneLongtitude = -92.2959491063508;
@@ -170,7 +170,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         path.UpdateBounds(corner,altitude,droneStatus);
-        droneStatus.batteryPrecentageRemian = path.getEnergyPercentRemainingAfterPlan()*100;
+        droneStatus.batteryPrecentageRemian = path.getEnergyPercentRemainingAfterPlan();
         List<GePoint> wps = path.getWaypoints();
         List<Boolean> isTurning = path.getIsTurning();
         List<Double> a = path.getAltitudes();
