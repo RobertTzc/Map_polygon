@@ -1,6 +1,7 @@
 package edu.missouri.geom;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -195,6 +196,14 @@ public class Line {
             result[i] = new Line(points[i], points[i+1]);
         }
         return result;
+    }
+
+    public static ArrayList<Line> arrayListFromPoints(Point[] points) {
+        ArrayList<Line> lineList = new ArrayList<>();
+        for(int i = 0; i < points.length-1; i++) {
+            lineList.add(new Line(points[i], points[i+1]));
+        }
+        return lineList;
     }
 
     public static Line[] arrayFromPointsPair(Point[] points) {

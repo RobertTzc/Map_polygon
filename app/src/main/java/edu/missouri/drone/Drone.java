@@ -39,6 +39,7 @@
      public static final double Power_Decending = 121.3;
      public static final double Power_Hover = 90.6;
      public static final double Power_Turning = 92.8;
+     public static final double Ridias_Speed = Math.toRadians(46);
 
      private Point location;
 

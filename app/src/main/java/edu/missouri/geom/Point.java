@@ -24,6 +24,15 @@ public class Point {
         coordinates[2] = z;
     }
 
+    public Point(Point p, double z,double heading){
+        coordinates = new double[4];
+        coordinates[0] = p.x();
+        coordinates[1] = p.y();
+        coordinates[2] = z;
+        coordinates[3] = heading;
+
+    }
+
 
     public Point(double... coordinates) {
         this.coordinates = coordinates.clone();

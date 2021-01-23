@@ -19,6 +19,7 @@ import edu.missouri.frame.Area;
 import edu.missouri.frame.Detectable;
 import edu.missouri.frame.Option;
 import edu.missouri.frame.QueueFuntions;
+import edu.missouri.geom.Angle;
 import edu.missouri.geom.Line;
 import edu.missouri.geom.Point;
 import edu.missouri.geom.Polygon;
@@ -240,59 +241,70 @@ public class ImprovedDirectDrone extends Drone {
     }
 
     public int getOptimalSpeed(int planSpeed,double energyBudget) {
-        Map<Integer, Double> maps = new LinkedHashMap<>();
-        for (int i = 0; i < Drone.MAX_SPEED + 1; i++) {
-            maps.put(i, energyUsed(i));
-        }
-        Iterator<Map.Entry<Integer, Double>> entries = maps.entrySet().iterator();
-        int optimalSpeed = planSpeed;
-        double minimumEnergy = 10000000000000000.0;
-        while (entries.hasNext()) {
-            Map.Entry<Integer, Double> entry = entries.next();
-            if (entry.getValue() < minimumEnergy) {
-                minimumEnergy = entry.getValue();
-                optimalSpeed = entry.getKey();
-            }
-        }
-        if (energyBudget< minimumEnergy){
-            optimalSpeed = 0;
-        }
+//        Map<Integer, Double> maps = new LinkedHashMap<>();
+//        for (int i = 0; i < Drone.MAX_SPEED + 1; i++) {
+//            maps.put(i, energyUsed(i));
+//        }
+//        Iterator<Map.Entry<Integer, Double>> entries = maps.entrySet().iterator();
+//        int optimalSpeed = planSpeed;
+//        double minimumEnergy = 10000000000000000.0;
+//        while (entries.hasNext()) {
+//            Map.Entry<Integer, Double> entry = entries.next();
+//            if (entry.getValue() < minimumEnergy) {
+//                minimumEnergy = entry.getValue();
+//                optimalSpeed = entry.getKey();
+//            }
+//        }
+//        if (energyBudget< minimumEnergy){
+//            optimalSpeed = 0;
+//        }
+        int optimalSpeed = 10;
         return optimalSpeed;
+    }
+
+    public ArrayList<Line> getAllpaths(){
+        List<Point> currentPoints = new ArrayList<>(PlowDrone.plan(getPolygon(), getLocation()));
+        Point[] finalPoints = new Point[currentPoints.size()];
+        for (int i=0;i<currentPoints.size();i++){
+            finalPoints[i] = currentPoints.get(i);
+        }
+        ArrayList<Line> lines = Line.arrayListFromPoints(finalPoints);
+        Line toLine = new Line(Option.startPoint,finalPoints[0]);
+        Line backLine = new Line(finalPoints[finalPoints.length-1],Option.endPoint);
+        lines.add(0,toLine);
+        lines.add(lines.size(),backLine);
+        return lines;
+    }
+
+    public ArrayList<Angle> getAllTurningAngle(ArrayList<Line> lines){
+        ArrayList<Angle> angles = new ArrayList<>();
+        for (int i = 0;i<lines.size()-1;i++){
+            angles.add(new Angle(lines.get(i).a(),lines.get(i).b(),lines.get(i+1).b()));
+        }
+        return angles;
     }
 
     // Energy calculations
     // credit to DiFranco and Buttazzo
     public double energyUsed(int speed) {
         int cruiseSpeed = speed;
-        List<Point> currentPoints = new ArrayList<>(PlowDrone.plan(getPolygon(), getLocation()));
-        Point[] finalPoints = new Point[currentPoints.size()];
-        for (int i=0;i<currentPoints.size();i++){
-            finalPoints[i] = currentPoints.get(i);
-        }
-        Line[] lines = Line.arrayFromPoints(finalPoints);
+        ArrayList<Line> lines = getAllpaths();
         double speedIn, speedOut;
         double result = 0.0;
-        Line toLine = new Line(Option.startPoint,finalPoints[0]);
-        Line backLine = new Line(finalPoints[finalPoints.length-1],Option.endPoint);
-//        System.out.println(toLine.a());
-//        System.out.println(toLine.b());
-//        System.out.println(backLine.a());
-//        System.out.println(backLine.b());
-        result += legEnergy(toLine, 0 , Option.toandBackSpeed, 0 );
-        for(int i = 0; i < lines.length; i++) {
-            // We could probably use some linear algebra to avoid the trig functions here,
-            // but I don't trust myself to do that.
+        for(int i = 0; i < lines.size(); i++) {
             speedIn = 0.0;
             speedOut = 0.0;
-            result += legEnergy(lines[i], speedIn , cruiseSpeed, speedOut );
+            result += (legEnergy(lines.get(i), speedIn , cruiseSpeed, speedOut )+verticalEnergy(lines.get(i)));
         }
-        result += legEnergy(backLine, 0 , Option.toandBackSpeed, 0 );
-        System.out.println("total energy is ");
-        System.out.println(result);
+        result += getTotalTurningEnergy(getAllTurningAngle(lines));
+//        System.out.println("total energy is ");
+//        System.out.println(result);
+//        System.out.println("turning energy is ");
+//        System.out.println(getTotalTurningEnergy(getAllTurningAngle(lines)));
         return result;
     }
 
-    public static double legEnergy(Line path, double startSpeed, int cruiseSpeed, double endSpeed) {
+    private static double legEnergy(Line path, double startSpeed, int cruiseSpeed, double endSpeed) {
         double dist = path.length2D();
 
         // These calculations are made for a drone with max speed 15 m/s
@@ -313,12 +325,22 @@ public class ImprovedDirectDrone extends Drone {
         double result =  EFFICIENCY_FACTOR * accEnergy(startSpeed, cruiseSpeed)
                 + EFFICIENCY_FACTOR * decEnergy(cruiseSpeed,endSpeed)
                 + EFFICIENCY_FACTOR * cruiseEnergy(dist - borderDist, cruiseSpeed);
-//        System.out.println("start speed:"+startSpeed);
-//        System.out.println("crusie speed:"+cruiseSpeed);
-//        System.out.println("end speed:"+endSpeed);
+        return result;
+    }
 
-        if(path.dz() < 0) result += Drone.Power_Decending*path.dz()/Drone.DESCENT_SPEED;
-        if(path.dz() > 0) result += Drone.Power_Climbing*path.dz()/Drone.ASCENT_SPEED;
+    private static double verticalEnergy(Line path){
+        double vertical_motion_power = 0.0;
+        if(path.dz() < 0) vertical_motion_power = (-Drone.Power_Decending*path.dz())/Drone.DESCENT_SPEED;
+        if(path.dz() > 0) vertical_motion_power = Drone.Power_Climbing*path.dz()/Drone.ASCENT_SPEED;
+        return vertical_motion_power;
+    }
+
+    private static double getTotalTurningEnergy(ArrayList<Angle> angles){
+        double result = 0.0;
+        double hoverTime = 1.0;
+        for (Angle angle: angles){
+            result += (hoverTime*Drone.Power_Hover+(angle.measure()/Drone.Ridias_Speed)*Drone.Power_Turning);
+        }
         return result;
     }
 
